@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react'
 import type { Element } from '../../core/types'
 import type { EditorToolId } from '../../core/tools'
-import type { SnapGuide } from '../canvas/snapEngine'
+import type { SnapGuide } from '../canvas'
 import { useEditorState } from '../../hooks/useEditorState'
+import { useEditorUiStore } from './editorUiStore'
 
 interface EditorDataContextValue {
   elements: Element[]
@@ -43,11 +44,16 @@ const EditorDataContext = createContext<EditorDataContextValue | null>(null)
 const EditorCommandsContext = createContext<EditorCommandsContextValue | null>(null)
 
 export function EditorProvider({ children }: { children: ReactNode }) {
-  const [activeTool, setActiveTool] = useState<EditorToolId>('move')
-  const [viewportOffset, setViewportOffset] = useState({ x: 0, y: 0 })
-  const [viewportScale, setViewportScale] = useState(1)
-  const [editingTextId, setEditingTextId] = useState<string | null>(null)
-  const [snapGuides, setSnapGuides] = useState<SnapGuide[]>([])
+  const activeTool = useEditorUiStore((state) => state.activeTool)
+  const viewportOffset = useEditorUiStore((state) => state.viewportOffset)
+  const viewportScale = useEditorUiStore((state) => state.viewportScale)
+  const editingTextId = useEditorUiStore((state) => state.editingTextId)
+  const snapGuides = useEditorUiStore((state) => state.snapGuides)
+  const setActiveTool = useEditorUiStore((state) => state.setActiveTool)
+  const setViewportOffset = useEditorUiStore((state) => state.setViewportOffset)
+  const setViewportScale = useEditorUiStore((state) => state.setViewportScale)
+  const setEditingTextId = useEditorUiStore((state) => state.setEditingTextId)
+  const setSnapGuides = useEditorUiStore((state) => state.setSnapGuides)
 
   const {
     elements,

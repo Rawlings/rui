@@ -1,8 +1,16 @@
 import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { Rnd } from 'react-rnd'
 import type { Element } from '../../core/types'
-import { useEditorCommands, useEditorData } from '../state/EditorContext'
+import { useCanvasCommandDomain, useCanvasQueryDomain } from '../state'
 import { computeSnap, type SnapRect } from './snapEngine'
+import {
+  canDragElement,
+  canResizeElement,
+  canSelectElementFromPointer,
+  canShowElementSelectionChrome,
+  resolveElementCursorClass,
+} from './interactionMachine'
+import type { CanvasInteractionEvent } from './interactionMachine'
 
 interface DragSnapInput {
   x: number
@@ -17,18 +25,32 @@ interface ElementRendererProps {
   element: Element
   isSelected: boolean
   children?: ReactNode
+  onInteractionSignal?: (event: CanvasInteractionEvent) => boolean
 }
 
 export function ElementRenderer({
   element,
   isSelected,
-  children
+  children,
+  onInteractionSignal,
 }: ElementRendererProps) {
-  const { activeTool, editingTextId, elements, viewportScale } = useEditorData()
-  const { selectElement, setEditingTextId, updateElement, setSnapGuides } = useEditorCommands()
+  const {
+    activeTool,
+    editingTextId,
+    elements,
+    viewportScale,
+  } = useCanvasQueryDomain()
+  const {
+    selectElement,
+    startTextEditing,
+    stopTextEditing,
+    updateElement,
+    updateSnapGuides,
+    clearSnapGuides,
+  } = useCanvasCommandDomain()
   const textEditorRef = useRef<HTMLDivElement | null>(null)
 
-  const elementCursorClass = activeTool === 'move' ? 'cursor-move' : activeTool === 'scale' ? 'cursor-se-resize' : 'cursor-default'
+  const elementCursorClass = resolveElementCursorClass(activeTool)
   const selectionOutlineClass = element.type === 'circle' ? 'rounded-full' : 'rounded-md'
   const textMode = String(element.styles.textMode ?? 'auto')
   const isEditingText = element.type === 'text' && editingTextId === element.id
@@ -38,8 +60,8 @@ export function ElementRenderer({
   const width = element.styles.width ?? (element.type === 'text' ? 'auto' : 100)
   const height = element.styles.height ?? (element.type === 'text' ? 'auto' : 100)
 
-  const canDrag = activeTool === 'move' && !isEditingText
-  const canResize = (activeTool === 'move' || activeTool === 'scale') && !isEditingText
+  const canDrag = canDragElement(activeTool, isEditingText)
+  const canResize = canResizeElement(activeTool, isEditingText)
   const isLocked = Boolean(element.locked)
   const guideRafRef = useRef<number | null>(null)
   const pendingDragRectRef = useRef<DragSnapInput | null>(null)
@@ -71,7 +93,7 @@ export function ElementRenderer({
 
     if (key !== lastGuidesKeyRef.current) {
       lastGuidesKeyRef.current = key
-      setSnapGuides(result.guides)
+      updateSnapGuides(result.guides)
     }
   }
 
@@ -134,7 +156,8 @@ export function ElementRenderer({
         text: nextText.trim().length > 0 ? nextText : 'Text'
       }
     })
-    setEditingTextId(null)
+    stopTextEditing()
+    onInteractionSignal?.({ type: 'TEXT_EDIT_END' })
   }
 
   return (
@@ -151,11 +174,7 @@ export function ElementRenderer({
       onMouseDown={(e) => {
         e.stopPropagation()
 
-        if (activeTool === 'hand') {
-          return
-        }
-
-        const canSelect = activeTool === 'move' || activeTool === 'scale' || (activeTool === 'text' && element.type === 'text')
+        const canSelect = canSelectElementFromPointer(activeTool, element.type === 'text')
         if (!canSelect) {
           return
         }
@@ -173,6 +192,11 @@ export function ElementRenderer({
           parentId: element.parentId ?? null
         })
       }}
+      onDragStart={() => {
+        if (!isLocked) {
+          onInteractionSignal?.({ type: 'DRAG_START', elementId: element.id })
+        }
+      }}
       onDragStop={(_, data) => {
         if (isLocked) return
 
@@ -185,12 +209,18 @@ export function ElementRenderer({
           { x: data.x, y: data.y, width: Number(width), height: Number(height), id: element.id, parentId: element.parentId ?? null },
           snapCandidates
         )
-        setSnapGuides([])
+        clearSnapGuides()
         pendingDragRectRef.current = null
         lastGuidesKeyRef.current = ''
         updateElement(element.id, {
           styles: { ...element.styles, left: result.x, top: result.y }
         })
+        onInteractionSignal?.({ type: 'DRAG_END' })
+      }}
+      onResizeStart={() => {
+        if (!isLocked) {
+          onInteractionSignal?.({ type: 'RESIZE_START', elementId: element.id, handle: 'bottomRight' })
+        }
       }}
       onResizeStop={(_, __, ref, ___, position) => {
         if (isLocked) return
@@ -200,10 +230,11 @@ export function ElementRenderer({
           { x: position.x, y: position.y, width: w, height: h, id: element.id, parentId: element.parentId ?? null },
           snapCandidates
         )
-        setSnapGuides([])
+        clearSnapGuides()
         updateElement(element.id, {
           styles: { ...element.styles, left: result.x, top: result.y, width: w, height: h }
         })
+        onInteractionSignal?.({ type: 'RESIZE_END' })
       }}
       className="data-editor-element"
       style={{ zIndex: isSelected ? 3 : 1 }}
@@ -216,7 +247,11 @@ export function ElementRenderer({
             return
           }
           e.stopPropagation()
-          setEditingTextId(element.id)
+          const admitted = onInteractionSignal?.({ type: 'TEXT_EDIT_START', elementId: element.id }) ?? true
+          if (!admitted) {
+            return
+          }
+          startTextEditing(element.id)
         }}
         className={`relative h-full w-full ${elementCursorClass}`}
         style={{ ...element.styles, left: undefined, top: undefined, width: '100%', height: '100%' }}
@@ -239,7 +274,8 @@ export function ElementRenderer({
             }
             if (e.key === 'Escape') {
               e.preventDefault()
-              setEditingTextId(null)
+              stopTextEditing()
+              onInteractionSignal?.({ type: 'TEXT_EDIT_END' })
             }
           }}
           className={`${isEditingText ? 'pointer-events-auto select-text rounded-sm px-0.5 outline-2 outline-[var(--primary-color)] outline-offset-[-3px]' : 'pointer-events-none select-none'} whitespace-pre-wrap text-inherit ${textMode === 'fixed' ? 'h-full w-full overflow-hidden' : 'inline-block'}`}
@@ -248,13 +284,13 @@ export function ElementRenderer({
         </div>
       ) : null}
 
-      {isSelected && (activeTool === 'move' || activeTool === 'scale') && (
+      {isSelected && canShowElementSelectionChrome(activeTool) && (
         <div
           className={`pointer-events-none absolute -inset-1 outline-2 outline-[var(--primary-color)] outline-offset-[-3px] ${selectionOutlineClass}`}
         />
       )}
 
-      {isSelected && (activeTool === 'move' || activeTool === 'scale') && !isEditingText && !isLocked && (
+      {isSelected && canShowElementSelectionChrome(activeTool) && !isEditingText && !isLocked && (
         <div
           className="absolute -bottom-2 -right-2 flex h-5 w-5 cursor-se-resize items-center justify-center rounded-full outline-2 outline-[var(--primary-color)] outline-offset-[-1px] bg-[var(--surface-0)] shadow-md"
           title="Resize"

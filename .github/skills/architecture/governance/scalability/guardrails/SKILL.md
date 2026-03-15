@@ -8,10 +8,16 @@ metadata:
 
 ## Objectives
 
+- Align tactical guardrails to the canonical editor target-state architecture skill.
 - Keep runtime architecture product-oriented: `src/features`, `src/core`, `src/hooks`, `src/components`.
 - Prevent anti-patterns that degrade scale, especially state prop drilling across feature trees.
 - Ensure refactors are complete: no dead folders, no stale imports, no mixed old/new structures.
 - Prioritize proven dependencies for non-differentiating infrastructure to reduce custom maintenance burden.
+
+## Canonical Source
+
+- Use `architecture/governance/target-state/editor-architecture/SKILL.md` as the primary architecture blueprint.
+- Use this skill for tactical guardrails and review prompts during active implementation.
 
 ## Guardrails
 

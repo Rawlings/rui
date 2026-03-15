@@ -6,8 +6,9 @@ import type { CreatingTextState, Point } from './canvasTypes'
 interface UseTextCreationParams {
   addElement: (type: Element['type'], position?: { left: number; top: number }, styleOverrides?: Partial<Element['styles']>) => string
   updateElement: (id: string, updates: Partial<Element>) => void
-  setEditingTextId: (id: string | null) => void
+  startTextEditing: (id: string) => void
   setActiveTool: (tool: EditorToolId) => void
+  onCreationEnd?: () => void
   elementsById: Map<string, Element>
   viewportOffset: Point
   viewportScale: number
@@ -16,8 +17,9 @@ interface UseTextCreationParams {
 export function useTextCreation({
   addElement,
   updateElement,
-  setEditingTextId,
+  startTextEditing,
   setActiveTool,
+  onCreationEnd,
   elementsById,
   viewportOffset,
   viewportScale
@@ -132,8 +134,9 @@ export function useTextCreation({
         }
       }
 
-      setEditingTextId(creatingText.id)
+      startTextEditing(creatingText.id)
       setActiveTool('move')
+      onCreationEnd?.()
       setCreatingText(null)
     }
 
@@ -147,7 +150,7 @@ export function useTextCreation({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [creatingText, elementsById, setActiveTool, setEditingTextId, updateElement, viewportOffset.x, viewportOffset.y, viewportScale])
+  }, [creatingText, elementsById, onCreationEnd, setActiveTool, startTextEditing, updateElement, viewportOffset.x, viewportOffset.y, viewportScale])
 
   return {
     creatingText,

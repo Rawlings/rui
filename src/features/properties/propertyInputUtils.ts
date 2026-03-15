@@ -26,7 +26,7 @@ export function toColorHex(value: unknown, fallback: string): string {
 }
 
 export interface PropertyInputProps {
-  property: import('../../utils/propertyRegistry').PropertyDefinition
+  property: import('./propertyRegistryDomain').PropertyDefinition
   value: any
   onChange: (value: any) => void
 }

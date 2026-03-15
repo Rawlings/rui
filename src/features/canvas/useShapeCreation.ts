@@ -6,6 +6,7 @@ import type { CreatingShapeState, Point } from './canvasTypes'
 interface UseShapeCreationParams {
   addElement: (type: Element['type'], position?: { left: number; top: number }, styleOverrides?: Partial<Element['styles']>) => string
   setActiveTool: (tool: EditorToolId) => void
+  onCreationEnd?: () => void
   viewportOffset: Point
   viewportScale: number
 }
@@ -13,6 +14,7 @@ interface UseShapeCreationParams {
 export function useShapeCreation({
   addElement,
   setActiveTool,
+  onCreationEnd,
   viewportOffset,
   viewportScale
 }: UseShapeCreationParams) {
@@ -128,6 +130,7 @@ export function useShapeCreation({
       }
 
       setActiveTool('move')
+      onCreationEnd?.()
       setCreatingShape(null)
     }
 
@@ -141,7 +144,7 @@ export function useShapeCreation({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [addElement, creatingShape, setActiveTool, viewportOffset.x, viewportOffset.y, viewportScale])
+  }, [addElement, creatingShape, onCreationEnd, setActiveTool, viewportOffset.x, viewportOffset.y, viewportScale])
 
   const shapePreviewStyle = useMemo(() => {
     if (!creatingShape) {

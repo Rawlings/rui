@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type WheelEvent } from 'react'
 import { useDrag } from '@use-gesture/react'
 import type { EditorToolId } from '../../core/tools'
+import { canPanFromPointer, resolveCanvasIdleCursorClass } from './interactionMachine'
 import type { Point } from './canvasTypes'
 
 interface UseCanvasPanZoomParams {
@@ -9,6 +10,9 @@ interface UseCanvasPanZoomParams {
   viewportScale: number
   setViewportOffset: (offset: Point) => void
   setViewportScale: (scale: number) => void
+  canStartPan?: (source: 'tool' | 'middle-mouse') => boolean
+  onPanStart?: (source: 'tool' | 'middle-mouse') => void
+  onPanEnd?: () => void
 }
 
 interface MiddleMousePanState {
@@ -23,7 +27,10 @@ export function useCanvasPanZoom({
   viewportOffset,
   viewportScale,
   setViewportOffset,
-  setViewportScale
+  setViewportScale,
+  canStartPan,
+  onPanStart,
+  onPanEnd,
 }: UseCanvasPanZoomParams) {
   const [isPanning, setIsPanning] = useState(false)
   const [middleMousePanStart, setMiddleMousePanStart] = useState<MiddleMousePanState | null>(null)
@@ -34,8 +41,7 @@ export function useCanvasPanZoom({
   const bindPan = useDrag(
     ({ first, last, movement: [mx, my], memo, event }) => {
       const pointerEvent = event as MouseEvent
-      const isMiddleMousePan = (pointerEvent.buttons & 4) === 4
-      const allowPan = activeTool === 'hand' || isMiddleMousePan
+      const allowPan = canPanFromPointer(activeTool, pointerEvent.buttons)
       const panMemo = (memo ?? { x: viewportOffset.x, y: viewportOffset.y }) as Point
 
       if (!allowPan) {
@@ -45,7 +51,12 @@ export function useCanvasPanZoom({
       event.preventDefault()
 
       if (first) {
+        const source = (pointerEvent.buttons & 4) === 4 ? 'middle-mouse' : 'tool'
+        if (canStartPan && !canStartPan(source)) {
+          return panMemo
+        }
         setIsPanning(true)
+        onPanStart?.(source)
         return { x: viewportOffset.x, y: viewportOffset.y }
       }
 
@@ -56,6 +67,7 @@ export function useCanvasPanZoom({
 
       if (last) {
         setIsPanning(false)
+        onPanEnd?.()
       }
 
       return panMemo
@@ -89,7 +101,11 @@ export function useCanvasPanZoom({
   }
 
   const startMiddleMousePan = (clientX: number, clientY: number) => {
+    if (canStartPan && !canStartPan('middle-mouse')) {
+      return
+    }
     setIsPanning(true)
+    onPanStart?.('middle-mouse')
     setMiddleMousePanStart({
       x: clientX,
       y: clientY,
@@ -116,6 +132,7 @@ export function useCanvasPanZoom({
     const handleMouseUp = () => {
       setMiddleMousePanStart(null)
       setIsPanning(false)
+      onPanEnd?.()
     }
 
     window.addEventListener('mousemove', handleMouseMove)
@@ -126,19 +143,13 @@ export function useCanvasPanZoom({
       window.removeEventListener('mouseup', handleMouseUp)
       document.body.style.cursor = previousCursor
     }
-  }, [middleMousePanStart, setViewportOffset])
+  }, [middleMousePanStart, onPanEnd, setViewportOffset])
 
   const canvasCursorClass = useMemo(() => {
     if (isPanning) {
       return 'cursor-grabbing'
     }
-    if (activeTool === 'hand') {
-      return 'cursor-grab'
-    }
-    if (activeTool === 'scale') {
-      return 'cursor-se-resize'
-    }
-    return 'cursor-default'
+    return resolveCanvasIdleCursorClass(activeTool)
   }, [activeTool, isPanning])
 
   return {

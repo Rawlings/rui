@@ -1,7 +1,10 @@
-import mdnProperties from 'mdn-data/css/properties.json'
-import mdnDefinitions from 'mdn-data/css/definitions.json'
-import { inferControlConfig, type PropertyControlType, type UnitValueType } from './propertyControlMapper'
-import { getPropertyValueHints } from './propertyValueHints'
+import type { PropertyControlType, UnitValueType } from './propertyControlMapper'
+import {
+  getDefaultPropertyPipeline,
+  type PropertyMetadata,
+  type PropertyMetadataProvider,
+  type PropertyPipeline,
+} from './propertyPipeline'
 
 export interface PropertyDefinition {
   group: string
@@ -24,39 +27,31 @@ export interface PropertyDefinition {
   cssProperty: string
 }
 
-const GROUP_ENUM = new Set<string>(((mdnDefinitions as Record<string, { enum?: string[] }>).groupList?.enum ?? []))
-
-type MdnPropertyRecord = {
-  initial?: string | string[]
-  syntax?: string | string[]
-  groups?: string[]
-  inherited?: boolean
-  status?: 'standard' | 'experimental' | 'nonstandard' | 'obsolete'
-  mdn_url?: string
-}
+const defaultPipeline = getDefaultPropertyPipeline()
+const registryCache = new WeakMap<PropertyPipeline, PropertyDefinition[]>()
 
 function kebabToCamel(property: string) {
   const [head, ...rest] = property.split('-')
   return [head, ...rest.map((segment) => `${segment[0]?.toUpperCase() ?? ''}${segment.slice(1)}`)].join('')
 }
 
-function normalizeMdnGroup(group: string): string {
+function normalizeMdnGroup(group: string, knownGroups: Set<string>): string {
   const trimmed = group.trim()
-  if (GROUP_ENUM.has(trimmed)) {
+  if (knownGroups.has(trimmed)) {
     return trimmed.replace(/^CSS\s+/i, '').trim()
   }
 
   const prefixed = trimmed.startsWith('CSS ') ? trimmed : `CSS ${trimmed}`
-  if (GROUP_ENUM.has(prefixed)) {
+  if (knownGroups.has(prefixed)) {
     return prefixed.replace(/^CSS\s+/i, '').trim()
   }
 
   return trimmed.replace(/^CSS\s+/i, '').trim()
 }
 
-function inferGroup(property: string, mdnGroups?: string[]): string {
+function inferGroup(property: string, mdnGroups: string[] | undefined, knownGroups: Set<string>): string {
   if (mdnGroups && mdnGroups.length > 0) {
-    const first = normalizeMdnGroup(mdnGroups[0])
+    const first = normalizeMdnGroup(mdnGroups[0], knownGroups)
     if (first.length > 0) {
       return first
     }
@@ -72,16 +67,6 @@ function inferGroup(property: string, mdnGroups?: string[]): string {
   if (/^(transform|transition|animation)/.test(property)) return 'Motion'
   if (/^(opacity|box-shadow|filter|backdrop-filter|mix-blend-mode)/.test(property)) return 'Effects'
   return 'Advanced'
-}
-
-function normalizeMetadataValue(value: string | string[] | undefined): string {
-  if (typeof value === 'string') {
-    return value
-  }
-  if (Array.isArray(value)) {
-    return value[0] ?? ''
-  }
-  return ''
 }
 
 function inferDefault(
@@ -113,13 +98,18 @@ function inferDefault(
   return initial || 'initial'
 }
 
-function buildPropertyDefinition(property: string): PropertyDefinition {
-  const metadata = (mdnProperties as unknown as Record<string, MdnPropertyRecord>)[property] ?? {}
-  const syntax = normalizeMetadataValue(metadata.syntax)
-  const initial = normalizeMetadataValue(metadata.initial)
-  const valueHints = getPropertyValueHints(syntax)
-  const control = inferControlConfig({
-    property,
+function buildPropertyDefinition(
+  metadataProvider: PropertyMetadataProvider,
+  metadata: PropertyMetadata,
+  pipeline: PropertyPipeline
+): PropertyDefinition {
+  const { controlMapper, hintProvider } = pipeline
+  const knownGroups = metadataProvider.getKnownGroups()
+  const syntax = metadata.syntax
+  const initial = metadata.initial
+  const valueHints = hintProvider.getHints(syntax)
+  const control = controlMapper.inferControl({
+    property: metadata.property,
     syntax,
     options: valueHints.keywordOnly ? valueHints.keywords : undefined,
     keywordOptions: valueHints.keywords,
@@ -128,12 +118,12 @@ function buildPropertyDefinition(property: string): PropertyDefinition {
   const type = control.controlType
 
   return {
-    group: inferGroup(property, metadata.groups),
-    name: property,
+    group: inferGroup(metadata.property, metadata.groups, knownGroups),
+    name: metadata.property,
     type,
-    inherited: Boolean(metadata.inherited),
-    status: metadata.status ?? 'standard',
-    mdnUrl: metadata.mdn_url,
+    inherited: metadata.inherited,
+    status: metadata.status,
+    mdnUrl: metadata.mdnUrl,
     syntax,
     typeHints: valueHints.typeHints,
     options: control.options,
@@ -153,16 +143,33 @@ function buildPropertyDefinition(property: string): PropertyDefinition {
     units: control.units,
     defaultUnit: control.defaultUnit,
     default: inferDefault(initial, type, control.options),
-    cssProperty: kebabToCamel(property)
+    cssProperty: kebabToCamel(metadata.property)
   }
 }
 
-export const propertyRegistry: PropertyDefinition[] = Object.keys(mdnProperties)
-  .filter((property) => !property.startsWith('-'))
-  .map((property) => buildPropertyDefinition(property))
-  .sort((a, b) => a.name.localeCompare(b.name))
+function createPropertyRegistry(pipeline: PropertyPipeline): PropertyDefinition[] {
+  const { metadataProvider } = pipeline
 
-export const getPropertyRegistry = () => propertyRegistry
+  return metadataProvider
+    .listProperties()
+    .map((property) => buildPropertyDefinition(metadataProvider, metadataProvider.getPropertyMetadata(property), pipeline))
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+const propertyRegistry: PropertyDefinition[] = createPropertyRegistry(defaultPipeline)
+registryCache.set(defaultPipeline, propertyRegistry)
+
+export const getPropertyRegistry = (pipeline?: PropertyPipeline) => {
+  const target = pipeline ?? defaultPipeline
+  const cached = registryCache.get(target)
+  if (cached) {
+    return cached
+  }
+
+  const next = createPropertyRegistry(target)
+  registryCache.set(target, next)
+  return next
+}
 
 export const groupProperties = (registry: PropertyDefinition[]) => {
   const groups: { [key: string]: PropertyDefinition[] } = {}

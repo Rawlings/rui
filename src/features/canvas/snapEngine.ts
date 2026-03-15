@@ -1,3 +1,5 @@
+import type { SnapGuide } from './canvasTypes'
+
 export interface SnapRect {
   id: string
   left: number
@@ -5,11 +7,6 @@ export interface SnapRect {
   width: number
   height: number
   parentId?: string | null
-}
-
-export interface SnapGuide {
-  type: 'h' | 'v'
-  position: number
 }
 
 export interface SnapResult {

@@ -1,14 +1,38 @@
 import { useMemo } from 'react'
-import { isShapeTool, isTextTool } from '../../core/tools'
-import { useEditorCommands, useEditorData } from '../state/EditorContext'
+import { useMachine } from '@xstate/react'
+import { useCanvasCommandDomain, useCanvasQueryDomain } from '../state'
 import { CanvasScene } from './CanvasScene'
+import {
+  canvasInteractionMachine,
+  resolveCanvasCursorClass,
+  resolveCanvasBackgroundResolution,
+  resolveCanvasPointerDownAction,
+  type CanvasInteractionEvent,
+} from './interactionMachine'
 import { useCanvasPanZoom } from './useCanvasPanZoom'
 import { useShapeCreation } from './useShapeCreation'
 import { useTextCreation } from './useTextCreation'
 
 export function Canvas() {
-  const { elements, selectedId, activeTool, viewportOffset, viewportScale, snapGuides } = useEditorData()
-  const { addElement, clearSelection, setActiveTool, setViewportOffset, setViewportScale, updateElement, setEditingTextId } = useEditorCommands()
+  const [interactionState, sendInteraction] = useMachine(canvasInteractionMachine)
+  const {
+    elements,
+    selectedId,
+    activeTool,
+    viewportOffset,
+    viewportScale,
+    snapGuides,
+  } = useCanvasQueryDomain()
+  const {
+    addElement,
+    updateElement,
+    clearCanvasSelection,
+    stopTextEditing,
+    startTextEditing,
+    setActiveTool,
+    setViewportOffset,
+    setViewportScale,
+  } = useCanvasCommandDomain()
 
   const elementsById = useMemo(() => {
     const map = new Map<string, (typeof elements)[number]>()
@@ -18,17 +42,35 @@ export function Canvas() {
     return map
   }, [elements])
 
+  const dispatchInteraction = (event: CanvasInteractionEvent): boolean => {
+    if (!interactionState.can(event)) {
+      return false
+    }
+    sendInteraction(event)
+    return true
+  }
+
   const { stageRef, bindPan, handleWheelZoom, startMiddleMousePan, canvasCursorClass } = useCanvasPanZoom({
     activeTool,
     viewportOffset,
     viewportScale,
     setViewportOffset,
-    setViewportScale
+    setViewportScale,
+    canStartPan: (source) => interactionState.can({ type: 'PAN_START', source }),
+    onPanStart: (source) => {
+      dispatchInteraction({ type: 'PAN_START', source })
+    },
+    onPanEnd: () => {
+      dispatchInteraction({ type: 'PAN_END' })
+    },
   })
 
   const { startShapeCreation, shapePreviewClassName, shapePreviewStyle } = useShapeCreation({
     addElement,
     setActiveTool,
+    onCreationEnd: () => {
+      dispatchInteraction({ type: 'SHAPE_CREATION_END' })
+    },
     viewportOffset,
     viewportScale
   })
@@ -36,50 +78,62 @@ export function Canvas() {
   const { startTextCreation } = useTextCreation({
     addElement,
     updateElement,
-    setEditingTextId,
+    startTextEditing,
     setActiveTool,
+    onCreationEnd: () => {
+      dispatchInteraction({ type: 'TEXT_CREATION_END' })
+    },
     elementsById,
     viewportOffset,
     viewportScale
   })
 
+  const sendInteractionSignal = (event: CanvasInteractionEvent): boolean => {
+    return dispatchInteraction(event)
+  }
+
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement
     const isElementTarget = Boolean(target.closest('[data-editor-element="true"]'))
+    const pointerDownAction = resolveCanvasPointerDownAction(e.button, isElementTarget)
 
-    if (e.button === 1) {
+    if (pointerDownAction.type === 'start-middle-pan') {
       e.preventDefault()
       startMiddleMousePan(e.clientX, e.clientY)
       return
     }
 
-    if (e.button !== 0) {
+    if (pointerDownAction.type === 'ignore') {
       return
     }
 
-    if (isElementTarget) {
-      return
-    }
+    const bounds = e.currentTarget.getBoundingClientRect()
+    const x = Math.max(0, (e.clientX - bounds.left - viewportOffset.x) / viewportScale)
+    const y = Math.max(0, (e.clientY - bounds.top - viewportOffset.y) / viewportScale)
+    const backgroundAction = resolveCanvasBackgroundResolution(interactionState, activeTool, { x, y })
 
-    if (isShapeTool(activeTool)) {
-      setEditingTextId(null)
-      const bounds = e.currentTarget.getBoundingClientRect()
-      const startX = Math.max(0, (e.clientX - bounds.left - viewportOffset.x) / viewportScale)
-      const startY = Math.max(0, (e.clientY - bounds.top - viewportOffset.y) / viewportScale)
+    if (backgroundAction.type === 'start-shape') {
+      const started = dispatchInteraction(backgroundAction.interactionEvent)
+      if (!started) {
+        return
+      }
+      stopTextEditing()
 
-      startShapeCreation(activeTool, {
+      startShapeCreation(backgroundAction.shapeTool, {
         stageLeft: bounds.left,
         stageTop: bounds.top,
-        startX,
-        startY
+        startX: x,
+        startY: y
       })
       return
     }
 
-    if (isTextTool(activeTool)) {
-      const bounds = e.currentTarget.getBoundingClientRect()
-      const x = Math.max(0, (e.clientX - bounds.left - viewportOffset.x) / viewportScale)
-      const y = Math.max(0, (e.clientY - bounds.top - viewportOffset.y) / viewportScale)
+    if (backgroundAction.type === 'start-text') {
+      const started = dispatchInteraction(backgroundAction.interactionEvent)
+      if (!started) {
+        return
+      }
+
       startTextCreation({
         stageLeft: bounds.left,
         stageTop: bounds.top,
@@ -89,13 +143,13 @@ export function Canvas() {
       return
     }
 
-    if (activeTool === 'move' || activeTool === 'scale') {
-      setEditingTextId(null)
-      clearSelection()
+    if (backgroundAction.type === 'clear-selection') {
+      clearCanvasSelection()
+      dispatchInteraction({ type: 'CANCEL' })
     }
   }
 
-  const effectiveCursorClass = isShapeTool(activeTool) ? 'cursor-crosshair' : canvasCursorClass
+  const effectiveCursorClass = resolveCanvasCursorClass(interactionState, activeTool, canvasCursorClass)
 
   return (
     <div
@@ -119,6 +173,7 @@ export function Canvas() {
         snapGuides={snapGuides}
         shapePreviewClassName={shapePreviewClassName}
         shapePreviewStyle={shapePreviewStyle}
+        onElementInteractionSignal={sendInteractionSignal}
       />
     </div>
   )

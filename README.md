@@ -101,6 +101,13 @@ It is a delivery platform for interface work: fast enough for exploration, struc
 
 Contributions are welcome. Keep changes focused, align with architecture and UX guardrails, and update documentation when behavior evolves.
 
+## Architecture Program
+
+- Target-state skill: `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`
+- Current boundary map: `.github/architecture/current-boundary-map.md`
+- Feature public API map: `.github/architecture/feature-public-api-map.md`
+- ADR index: `.github/architecture/adrs/README.md`
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

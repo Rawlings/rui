@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import type { Element } from '../../core/types'
 import { ElementRenderer } from './ElementRenderer'
-import type { SnapGuide } from './snapEngine'
+import type { SnapGuide } from './canvasTypes'
+import type { CanvasInteractionEvent } from './interactionMachine'
 
 interface CanvasSceneProps {
   elements: Element[]
@@ -12,6 +13,7 @@ interface CanvasSceneProps {
   snapGuides: SnapGuide[]
   shapePreviewClassName: string
   shapePreviewStyle: CSSProperties | null
+  onElementInteractionSignal?: (event: CanvasInteractionEvent) => boolean
 }
 
 export function CanvasScene({
@@ -21,7 +23,8 @@ export function CanvasScene({
   viewportScale,
   snapGuides,
   shapePreviewClassName,
-  shapePreviewStyle
+  shapePreviewStyle,
+  onElementInteractionSignal,
 }: CanvasSceneProps) {
   const childrenByParent = useMemo(() => {
     const map = new Map<string | null, Element[]>()
@@ -38,7 +41,12 @@ export function CanvasScene({
   }, [elements])
 
   const renderElementTree = (element: Element): ReactNode => (
-    <ElementRenderer key={element.id} element={element} isSelected={selectedId === element.id}>
+    <ElementRenderer
+      key={element.id}
+      element={element}
+      isSelected={selectedId === element.id}
+      onInteractionSignal={onElementInteractionSignal}
+    >
       {(childrenByParent.get(element.id) ?? []).map((child) => renderElementTree(child))}
     </ElementRenderer>
   )

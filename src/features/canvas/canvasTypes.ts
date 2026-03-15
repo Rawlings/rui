@@ -22,3 +22,8 @@ export interface Point {
   x: number
   y: number
 }
+
+export interface SnapGuide {
+  type: 'h' | 'v'
+  position: number
+}

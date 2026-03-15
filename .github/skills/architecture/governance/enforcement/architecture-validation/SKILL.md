@@ -11,13 +11,19 @@ metadata:
 - Keep architecture enforcement lightweight and maintainable.
 - Use explicit acceptance criteria and review checks instead of ad-hoc structural scripts.
 - Ensure every structural change proves runtime integrity via diagnostics and build.
+- Validate progress against the canonical target-state architecture skill using advisory checks.
 
 ## Enforcement Model
 
-- Policy source: skill guardrails and repository documentation.
+- Policy source: `architecture/governance/target-state/editor-architecture/SKILL.md`, guardrails skill, and repository documentation.
 - Enforcement mechanism: PR review checklist + required build/typecheck status.
 - Verification: no runtime code under forbidden patterns (for this repo: no `src/agents`).
 - Dependency validation: package-audit evidence for new infrastructure concerns and explicit rationale for custom implementations.
+
+## Advisory Validation Stance
+
+- Validation guidance is advisory and intended to guide architectural convergence.
+- Prefer documenting tradeoffs and follow-up migration steps over blocking work when full alignment is not yet practical.
 
 ## Acceptance Checks
 

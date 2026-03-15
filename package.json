@@ -34,6 +34,8 @@
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
     "@vitejs/plugin-react": "^4.7.0",
+    "@xstate/react": "^6.1.0",
+    "immer": "^11.1.4",
     "isbot": "^5.1.31",
     "lucide-react": "^0.577.0",
     "mdn-data": "^2.27.1",
@@ -44,7 +46,9 @@
     "react-hotkeys-hook": "^5.2.4",
     "react-rnd": "^10.5.3",
     "react-router": "7.12.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "xstate": "^5.28.0",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",

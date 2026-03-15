@@ -1,6 +1,6 @@
-import { Button } from 'primereact/button'
 import type { TreeNode } from 'primereact/treenode'
 import type { Element } from '../../core/types'
+import { IconActionButton } from '../ui'
 import { LAYER_ICON, LAYER_ACTIONS } from './layerUtils'
 
 interface Props {
@@ -25,17 +25,19 @@ export function LayerNode({ node, selectedId, onMove }: Props) {
       {element.hidden && <i className={`pi pi-eye-slash text-xs ${isSelected ? 'text-[var(--primary-color-text)]' : 'text-[var(--text-color-secondary)]'}`} aria-hidden="true" />}
       <div className="ml-auto flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         {LAYER_ACTIONS.map(({ dir, tooltip }) => (
-          <Button
+          <IconActionButton
             key={dir}
-            type="button"
-            text
-            className={`h-6 w-6 p-0 ${isSelected ? 'text-[var(--primary-color-text)]' : 'text-[var(--text-color-secondary)]'}`}
+            ariaLabel={tooltip}
+            icon={<i className={`pi pi-angle-${dir} text-xs`} aria-hidden="true" />}
+            compact
+            chromeless
+            className={isSelected ? 'text-[var(--primary-color-text)]' : 'text-[var(--text-color-secondary)]'}
             tooltip={tooltip}
-            tooltipOptions={{ position: 'top', showDelay: 120 }}
-            onClick={(e) => { e.stopPropagation(); onMove(element.id, dir) }}
-          >
-            <i className={`pi pi-angle-${dir} text-xs`} aria-hidden="true" />
-          </Button>
+            onClick={(event) => {
+              event.stopPropagation()
+              onMove(element.id, dir)
+            }}
+          />
         ))}
       </div>
     </div>

@@ -157,6 +157,16 @@ This file defines specialized agents for developing the WYSIWYG editor. Each age
 
 ## Usage
 
+## Architecture Target State Skill
+
+- Canonical architecture wanted-state guidance is defined in `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`.
+- Use this skill when planning medium/large refactors, evaluating architecture drift, or sequencing migrations across canvas/layers/properties/state.
+- Pair it with `.github/skills/architecture/governance/scalability/guardrails/SKILL.md` for tactical implementation checks and `.github/skills/architecture/governance/enforcement/architecture-validation/SKILL.md` for review criteria.
+
+Example invocation:
+
+"Using the editor-architecture skill, assess our current module boundaries and propose an incremental migration sequence for state and canvas interactions."
+
 ## Property Metadata Baseline
 
 - The properties panel displays all supported MDN properties (no Common/All mode toggle).

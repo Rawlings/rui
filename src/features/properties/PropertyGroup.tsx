@@ -1,14 +1,14 @@
-import type { PropertyDefinition } from '../../utils/propertyRegistry'
+import type { PropertyDefinition } from './propertyRegistryDomain'
 import type { Element } from '../../core/types'
 import { PropertyInput } from './PropertyInput'
 
 interface Props {
   props: PropertyDefinition[]
   element: Element
-  onUpdate: (styles: Element['styles']) => void
+  onUpdateProperty: (cssProperty: string, value: Element['styles'][string]) => void
 }
 
-export function PropertyGroup({ props, element, onUpdate }: Props) {
+export function PropertyGroup({ props, element, onUpdateProperty }: Props) {
   return (
     <div className="space-y-2">
       {props.map((prop) => (
@@ -28,7 +28,7 @@ export function PropertyGroup({ props, element, onUpdate }: Props) {
           <PropertyInput
             property={prop}
             value={element.styles[prop.cssProperty] ?? prop.default}
-            onChange={(val) => onUpdate({ ...element.styles, [prop.cssProperty]: val })}
+            onChange={(val) => onUpdateProperty(prop.cssProperty, val)}
           />
         </div>
       ))}

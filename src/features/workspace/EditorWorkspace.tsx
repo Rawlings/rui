@@ -1,18 +1,19 @@
-import { Toolbar } from '../toolbar/Toolbar'
-import { Canvas } from '../canvas/Canvas'
-import { PropertiesPanel } from '../properties/PropertiesPanel'
-import { LayersPanel } from '../layers/LayersPanel'
-import { EditorProvider } from '../state/EditorContext'
+import { Toolbar } from '../toolbar'
+import { Canvas } from '../canvas'
+import { PropertiesPanel } from '../properties'
+import { LayersPanel } from '../layers'
+import { EditorProvider } from '../state'
+import { EditorShell } from '../ui'
 
 export function EditorWorkspace() {
   return (
     <EditorProvider>
-      <div className="relative h-screen w-full overflow-hidden">
+      <EditorShell>
         <Canvas />
         <LayersPanel />
         <PropertiesPanel />
         <Toolbar />
-      </div>
+      </EditorShell>
     </EditorProvider>
   )
 }

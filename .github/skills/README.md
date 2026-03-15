@@ -4,7 +4,7 @@ This directory is organized by high-level architecture domains with deeper nesti
 
 ## Top-level domains
 
-- architecture: coordination, orchestration, integration, and state history
+- architecture: coordination, governance, orchestration, integration, and state history
 - experience: authoring tools and interface editing workflows
 - styling: CSS system, motion, responsive behavior, and API expansion
 - quality: accessibility, testing, and performance
@@ -15,6 +15,7 @@ This directory is organized by high-level architecture domains with deeper nesti
 - architecture/coordination/multi-agent/orchestration/SKILL.md
 - architecture/coordination/system-integration/SKILL.md
 - architecture/coordination/workflows/agent-orchestration/SKILL.md
+- architecture/governance/target-state/editor-architecture/SKILL.md
 - architecture/governance/scalability/guardrails/SKILL.md
 - architecture/governance/enforcement/architecture-validation/SKILL.md
 - architecture/state/history/undo-redo/SKILL.md
@@ -48,6 +49,9 @@ This directory is organized by high-level architecture domains with deeper nesti
 - Legacy path aliases are documented in aliases.json.
 
 ## Product Architecture Guardrails
+
+- Canonical architecture target-state guidance lives in `architecture/governance/target-state/editor-architecture/SKILL.md`.
+- Governance and validation skills should reference that target-state skill rather than duplicating policy text.
 
 - Runtime product code must use product-oriented structure such as `src/features`, `src/components`, `src/core`, and `src/hooks`.
 - Do not place runtime UI or domain logic under `src/agents`.
