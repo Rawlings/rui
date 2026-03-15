@@ -1,10 +1,11 @@
 # ADR-006: Cross-feature Dependency Guardrails
 
-- Status: proposed
+- Status: accepted
 - Date: 2026-03-15
 - Owners: architecture working group
 - Related skill: `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`
 - Related backlog stream: Stream F
+- Implementation status: incrementally adopted; see `.github/architecture/current-boundary-map.md`.
 
 ## Context
 

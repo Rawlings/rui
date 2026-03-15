@@ -18,6 +18,7 @@ metadata:
 
 - Use `architecture/governance/target-state/editor-architecture/SKILL.md` as the primary architecture blueprint.
 - Use this skill for tactical guardrails and review prompts during active implementation.
+- If guidance conflicts, target-state skill policy takes precedence.
 
 ## Guardrails
 
@@ -48,3 +49,7 @@ metadata:
 - Is there a documented mapping from metadata to control primitives?
 - Was an NPM package audit performed for new non-core infrastructure?
 - If custom code was chosen, is there a documented justification and maintenance plan?
+
+## Common Drift Fixes
+
+- For recurring anti-patterns and approved remediations, use `.github/architecture/violations-and-how-to-fix.md`.

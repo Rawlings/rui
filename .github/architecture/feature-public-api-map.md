@@ -7,6 +7,11 @@ Status: finalized
 
 Define stable cross-feature public entry points and guardrails.
 
+## Companion Review Assets
+
+- PR checklist: `.github/pull_request_template.md`
+- Common fixes for drift: `.github/architecture/violations-and-how-to-fix.md`
+
 ## Boundary Policy
 
 - Features expose stable public APIs from top-level feature entry files.

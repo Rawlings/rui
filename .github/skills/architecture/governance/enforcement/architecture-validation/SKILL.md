@@ -16,9 +16,12 @@ metadata:
 ## Enforcement Model
 
 - Policy source: `architecture/governance/target-state/editor-architecture/SKILL.md`, guardrails skill, and repository documentation.
+- Conflict precedence: target-state skill first, then domain guardrails, then repository-level supporting docs.
 - Enforcement mechanism: PR review checklist + required build/typecheck status.
 - Verification: no runtime code under forbidden patterns (for this repo: no `src/agents`).
 - Dependency validation: package-audit evidence for new infrastructure concerns and explicit rationale for custom implementations.
+- Practical checklist source: `.github/pull_request_template.md`.
+- Common remediation patterns: `.github/architecture/violations-and-how-to-fix.md`.
 
 ## Advisory Validation Stance
 
@@ -31,6 +34,7 @@ metadata:
 - Feature boundaries remove unnecessary prop drilling for feature state/actions.
 - No dead paths remain from superseded architecture.
 - `npm run typecheck` and `npm run build` succeed.
+- React component and hook changes align with `architecture/governance/implementation/react-patterns/SKILL.md`.
 - Advanced property coverage is dependency-driven from metadata sources.
 - UI controls are mapped via shared rules, not ad-hoc per-property branching.
 - New generic infrastructure work documents package options considered before custom code.

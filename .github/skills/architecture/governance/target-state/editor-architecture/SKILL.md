@@ -6,6 +6,12 @@ metadata:
   taxonomy: architecture/governance/target-state/editor-architecture
 ---
 
+## Authoritative Source
+
+This skill is the single source of truth for editor runtime architecture policy in this repository.
+Companion governance skills should reference this document instead of redefining policy.
+Operational workflow defaults and implementation checklists are maintained in `AGENTS.md`.
+
 ## Objectives
 
 - Establish a single architecture source of truth for editor runtime structure.
@@ -107,3 +113,10 @@ metadata:
 - Current boundary map: `.github/architecture/current-boundary-map.md`
 - Feature public API map: `.github/architecture/feature-public-api-map.md`
 - ADR index and templates: `.github/architecture/adrs/README.md`
+
+## Governance Cross-References
+
+- React implementation patterns: `.github/skills/architecture/governance/implementation/react-patterns/SKILL.md`
+- Tactical guardrails: `.github/skills/architecture/governance/scalability/guardrails/SKILL.md`
+- Review and validation criteria: `.github/skills/architecture/governance/enforcement/architecture-validation/SKILL.md`
+- Active architecture decisions: `.github/architecture/adrs/README.md`

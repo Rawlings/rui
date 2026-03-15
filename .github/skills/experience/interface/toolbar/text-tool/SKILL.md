@@ -37,7 +37,7 @@ metadata:
 ## Interaction Rules
 
 - Pointer drags in text-edit mode should select text, not move layer.
-- Move or scale interactions apply only after exiting text-edit mode.
+- Move or resize interactions apply only after exiting text-edit mode.
 - Text creation and edits should produce clear undo boundaries.
 
 ## Accessibility and Shortcuts

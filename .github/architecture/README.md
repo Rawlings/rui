@@ -11,6 +11,8 @@ This directory operationalizes the editor architecture target state.
 - ADR index and templates: `.github/architecture/adrs/README.md`
 - Current boundary map: `.github/architecture/current-boundary-map.md`
 - Feature public API map: `.github/architecture/feature-public-api-map.md`
+- Common violations playbook: `.github/architecture/violations-and-how-to-fix.md`
+- PR checklist template: `.github/pull_request_template.md`
 
 ## Program Rules
 
@@ -18,6 +20,8 @@ This directory operationalizes the editor architecture target state.
 - Keep changes incremental and reversible.
 - Every architecture stream records decisions in an ADR before broad rollout.
 - Every refactor PR includes rollback notes and risk checks.
+- Every architecture-sensitive PR should complete the checklist in `.github/pull_request_template.md`.
+- If a temporary boundary exception is required, record owner and expiry in `.github/architecture/feature-public-api-map.md`.
 
 ## Definition Of Progress
 
@@ -34,3 +38,8 @@ A stream is considered complete when:
 2. Build and typecheck pass.
 3. ADR updated to final status.
 4. Boundary and API maps reflect the finalized state.
+
+## Maintenance Cadence
+
+- Monthly: verify links, checklists, and exception register freshness.
+- Quarterly: reconcile ADR status with boundary/API maps and update governance docs if drift is found.

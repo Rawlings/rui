@@ -46,8 +46,9 @@ metadata:
   - always preserves current selection while panning
 - Move + element press:
   - selects target, then allows dragging if not locked
-- Scale + element press:
-  - selects target, then allows resize handles if not locked
+- Move + selected resize handle press:
+  - starts resize if not locked
+  - keeps resize ownership within the same interaction coordinator lifecycle
 - Shape creation tools + element press:
   - do not retarget selection implicitly
   - creation starts only from stage/background pointer-down

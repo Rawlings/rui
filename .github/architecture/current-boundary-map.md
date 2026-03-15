@@ -40,3 +40,8 @@ Owner: architecture working group
 - Cross-feature imports route through feature public entries (`src/features/*/index.ts`)
 - Deep cross-feature relative imports under `src/features/**` are eliminated
 - Detailed module-level surface is tracked in `.github/architecture/feature-public-api-map.md`
+
+## Review and Remediation Assets
+
+- PR architecture checklist: `.github/pull_request_template.md`
+- Violation fixes playbook: `.github/architecture/violations-and-how-to-fix.md`

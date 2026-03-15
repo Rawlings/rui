@@ -15,9 +15,14 @@ Use `ADR-TEMPLATE.md` for every architecture stream.
 
 ## Index
 
-- ADR-001 Runtime Shell Consolidation
-- ADR-002 State and Command Boundary Narrowing
-- ADR-003 Viewport and Interaction Unification
-- ADR-004 Property Metadata Pipeline Decomposition
-- ADR-005 Styling Entry and UI Primitive Governance
-- ADR-006 Cross-feature Dependency Guardrails
+- ADR-001 Runtime Shell Consolidation (accepted)
+- ADR-002 State and Command Boundary Narrowing (accepted)
+- ADR-003 Viewport and Interaction Unification (accepted)
+- ADR-004 Property Metadata Pipeline Decomposition (accepted)
+- ADR-005 Styling Entry and UI Primitive Governance (accepted)
+- ADR-006 Cross-feature Dependency Guardrails (accepted)
+
+## Implementation Evidence
+
+- Current architecture realization is tracked in `.github/architecture/current-boundary-map.md`.
+- Feature boundary contracts and temporary exceptions are tracked in `.github/architecture/feature-public-api-map.md`.

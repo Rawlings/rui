@@ -6,6 +6,13 @@ description: "Custom agents for WYSIWYG editor development. Use when: building U
 
 This file defines specialized agents for developing the WYSIWYG editor. Each agent focuses on a specific aspect of the editor to ensure modular and scalable development.
 
+## Authority
+
+- This file is the authoritative source for agent usage, workflow discipline, and repository-specific implementation baselines.
+- Runtime architecture policy authority is delegated to `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`.
+- For domain implementation rules, follow the relevant SKILL file guidance before AGENTS-level defaults.
+- `.github/AGENTS.md` is a redirect only and should not define independent policy.
+
 ## Available Agents
 
 ### UI Agent
@@ -157,9 +164,33 @@ This file defines specialized agents for developing the WYSIWYG editor. Each age
 
 ## Usage
 
+## Invocation Discipline
+
+- Agent names define workflow specialization. Skills define implementation rules.
+- For any medium/large refactor or cross-feature change, invoke the architecture target-state skill before coding.
+- For domain work, invoke both the domain agent and the matching skill guidance from `.github/skills/README.md`.
+- For React or TypeScript implementation work, invoke `.github/skills/architecture/governance/implementation/react-patterns/SKILL.md` before editing.
+- When guidance conflicts, follow this precedence order:
+  1) `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`
+  2) domain-specific skill guidance
+  3) this AGENTS file (workflow and repository baselines)
+
+## Always-On Architecture Checklist
+
+Run this checklist for every implementation request:
+
+- Identify domain and boundary impact first (canvas, properties, state, toolbar, layers, integration).
+- Confirm canonical guidance in `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md` and relevant domain skills before editing files.
+- Confirm React implementation guidance in `.github/skills/architecture/governance/implementation/react-patterns/SKILL.md` for component/hook work.
+- Avoid deep cross-feature imports; use public feature APIs and integration boundaries.
+- Keep state access at feature boundaries; do not introduce new multi-level state prop threading.
+- Remove dead paths and stale imports in the same change when refactoring.
+- Validate with `npm run typecheck` and `npm run build` when the change is architecture-sensitive or structural.
+- If a temporary exception is needed, document it in `.github/architecture/feature-public-api-map.md` with owner and expiry.
+
 ## Architecture Target State Skill
 
-- Canonical architecture wanted-state guidance is defined in `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`.
+- Canonical architecture policy is defined in `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`.
 - Use this skill when planning medium/large refactors, evaluating architecture drift, or sequencing migrations across canvas/layers/properties/state.
 - Pair it with `.github/skills/architecture/governance/scalability/guardrails/SKILL.md` for tactical implementation checks and `.github/skills/architecture/governance/enforcement/architecture-validation/SKILL.md` for review criteria.
 

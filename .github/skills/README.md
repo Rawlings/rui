@@ -16,6 +16,7 @@ This directory is organized by high-level architecture domains with deeper nesti
 - architecture/coordination/system-integration/SKILL.md
 - architecture/coordination/workflows/agent-orchestration/SKILL.md
 - architecture/governance/target-state/editor-architecture/SKILL.md
+- architecture/governance/implementation/react-patterns/SKILL.md
 - architecture/governance/scalability/guardrails/SKILL.md
 - architecture/governance/enforcement/architecture-validation/SKILL.md
 - architecture/state/history/undo-redo/SKILL.md
@@ -42,6 +43,27 @@ This directory is organized by high-level architecture domains with deeper nesti
 - quality/testing/automation/SKILL.md
 - data/serialization/export-import/SKILL.md
 
+## Invocation Routing
+
+Use this quick map before implementation:
+
+- canvas interactions: `experience/authoring/canvas/interactions/SKILL.md` + `architecture/governance/target-state/editor-architecture/SKILL.md`
+- snapping/performance: `experience/authoring/canvas/snapping/SKILL.md` + `quality/performance/optimization/SKILL.md`
+- properties editing: `experience/interface/properties/editing/SKILL.md` + `experience/interface/properties/metadata-control-mapping/SKILL.md`
+- toolbar changes: `experience/interface/toolbar/*` skills + `experience/interface/components/ui/SKILL.md`
+- state/command boundaries: `architecture/governance/target-state/editor-architecture/SKILL.md` + `architecture/governance/scalability/guardrails/SKILL.md`
+- react implementation patterns: `architecture/governance/implementation/react-patterns/SKILL.md` + `architecture/governance/target-state/editor-architecture/SKILL.md`
+- cross-feature integration: `architecture/coordination/system-integration/SKILL.md` + `architecture/governance/enforcement/architecture-validation/SKILL.md`
+- styling/theming: `styling/system/themes/SKILL.md` + repository AGENTS theming baseline
+
+## Invocation Examples
+
+- "Using the editor-architecture skill, assess whether this refactor improves module boundaries before I start coding."
+- "Using the canvas interactions skill and guardrails, implement drag behavior without introducing state prop threading."
+- "Using the react-patterns skill, refactor this component into boundary hook + presentational split without changing behavior."
+- "Using the metadata-control-mapping skill, add a control for this CSS property using syntax-driven mapping."
+- "Using the architecture-validation skill, review this PR for boundary regressions and dependency drift."
+
 ## Standards
 
 - Skill frontmatter only uses supported attributes.
@@ -67,3 +89,8 @@ This directory is organized by high-level architecture domains with deeper nesti
 - Hardcode only curated common-first UX groups; derive advanced catalogs from metadata.
 - Map property controls from metadata semantics and syntax, not ad-hoc name lists.
 - Keep control mapping and validation test-covered as the catalog scales.
+
+## Maintenance Cadence
+
+- Monthly: verify canonical skill paths and invocation routing examples remain accurate.
+- Quarterly: reconcile governance skill wording with architecture ADR status and boundary maps.
