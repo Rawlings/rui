@@ -23,7 +23,7 @@ export function getLayerLabel(element: Element, index: number): string {
 
 export const treePt: TreePassThroughOptions = {
   root: { className: 'border-none bg-transparent p-0' },
-  container: { className: 'divide-y divide-[var(--surface-border)]' },
+  container: { className: 'divide-none' },
   subgroup: { className: 'pl-3' },
   toggler: {
     className: 'mr-1 inline-flex h-5 w-5 items-center justify-center rounded-md text-[var(--text-color-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-color)]'
@@ -36,11 +36,6 @@ export const treePt: TreePassThroughOptions = {
     }`
   })
 }
-
-export const LAYER_ACTIONS = [
-  { dir: 'down', tooltip: 'Send backward' },
-  { dir: 'up', tooltip: 'Bring forward' },
-] as const
 
 export function findLocation(
   nodes: TreeNode[],

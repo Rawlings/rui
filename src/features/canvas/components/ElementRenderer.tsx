@@ -165,10 +165,6 @@ export function ElementRenderer({
     }
   }, [])
 
-  if (element.hidden) {
-    return null
-  }
-
   useEffect(() => {
     if (!isEditingText) {
       return
@@ -190,6 +186,10 @@ export function ElementRenderer({
     selection.removeAllRanges()
     selection.addRange(range)
   }, [isEditingText])
+
+  if (element.hidden) {
+    return null
+  }
 
   const commitTextValue = () => {
     if (!isEditingText) {

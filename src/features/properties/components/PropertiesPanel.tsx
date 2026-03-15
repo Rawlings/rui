@@ -13,8 +13,8 @@ export function PropertiesPanel() {
   const groupedEntries = useGroupedPropertyRegistry(search)
 
   return (
-    <SideRail side="right" width={360}>
-      <div className="mb-4">
+    <SideRail side="right" width={420} contentClassName="pt-4 pb-4">
+      <div className="mb-4 px-4">
         <PanelSearchInput
           value={search}
           onChange={setSearch}
@@ -24,9 +24,10 @@ export function PropertiesPanel() {
       </div>
 
       {!selectedElement ? (
-        <PanelEmptyState>No element selected</PanelEmptyState>
+        <PanelEmptyState className="px-4">No element selected</PanelEmptyState>
       ) : (
         <Accordion
+          className="properties-panel-accordion"
           multiple
           activeIndex={activeSections}
           onTabChange={(e) => setActiveSections(Array.isArray(e.index) ? e.index : e.index === null ? [] : [e.index])}

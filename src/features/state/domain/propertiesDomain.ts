@@ -19,11 +19,15 @@ export function usePropertiesCommandDomain() {
     (cssProperty: string, value: Element['styles'][string]) => {
       if (!selectedElement) return
 
+      const nextStyles = { ...selectedElement.styles }
+      if (value === undefined || value === null) {
+        delete nextStyles[cssProperty]
+      } else {
+        nextStyles[cssProperty] = value
+      }
+
       updateElement(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [cssProperty]: value,
-        }
+        styles: nextStyles
       })
     },
     [selectedElement, updateElement]

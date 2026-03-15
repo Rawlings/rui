@@ -1,12 +1,13 @@
 import { useCallback, useMemo } from 'react'
 import { useEditorCommands, useEditorData } from '../context'
+import { usePropertiesCommandDomain } from './propertiesDomain'
 
 export function useSelectionQueryDomain() {
   const { selectedId, selectedElement } = useEditorData()
 
   const hasSelection = Boolean(selectedId)
   const isLocked = Boolean(selectedElement?.locked)
-  const isHidden = Boolean(selectedElement?.hidden)
+  const isHidden = selectedElement?.styles?.display === 'none'
 
   return useMemo(
     () => ({
@@ -27,14 +28,14 @@ export function useSelectionQueryDomain() {
 }
 
 export function useSelectionCommandDomain() {
-  const { selectedId } = useEditorData()
+  const { selectedId, selectedElement } = useEditorData()
   const {
     duplicateSelectedElement,
     deleteSelectedElement,
     moveElementLayer,
     toggleSelectedLock,
-    toggleSelectedVisibility,
   } = useEditorCommands()
+  const { updateSelectedStyleProperty } = usePropertiesCommandDomain()
 
   const moveSelectionLayer = useCallback(
     (direction: 'front' | 'back') => {
@@ -43,6 +44,15 @@ export function useSelectionCommandDomain() {
     },
     [moveElementLayer, selectedId]
   )
+
+  const toggleSelectedVisibility = useCallback(() => {
+    if (!selectedElement) {
+      return
+    }
+
+    const currentlyHidden = selectedElement.styles?.display === 'none'
+    updateSelectedStyleProperty('display', currentlyHidden ? undefined : 'none')
+  }, [selectedElement, updateSelectedStyleProperty])
 
   return useMemo(
     () => ({

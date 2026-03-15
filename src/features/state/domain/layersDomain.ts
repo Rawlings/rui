@@ -14,7 +14,7 @@ export function useLayersCommandDomain() {
   const { selectElement, moveElementLayer, setElementParentAt } = useEditorCommands()
 
   const moveLayer = useCallback(
-    (id: string | null | undefined, direction: 'up' | 'down') => {
+    (id: string | null | undefined, direction: 'front' | 'back') => {
       if (!id) return
       moveElementLayer(id, direction)
     },

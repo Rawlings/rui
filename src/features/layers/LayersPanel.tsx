@@ -30,7 +30,7 @@ export function LayersPanel() {
         metaKeySelection={false}
         onSelectionChange={(e) => selectElement(typeof e.value === 'string' ? e.value : null)}
         nodeTemplate={(node) => (
-          <LayerNode node={node} selectedId={selectedId} onMove={moveLayer} />
+          <LayerNode node={node} selectedId={selectedId} onSelect={selectElement} onMove={moveLayer} />
         )}
         emptyMessage="No layers"
         dragdropScope={search.trim() ? undefined : 'driftless-layers'}

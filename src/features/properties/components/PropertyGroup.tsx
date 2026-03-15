@@ -15,7 +15,7 @@ export function PropertyGroup({ props, element, onUpdateProperty }: Props) {
         <div key={prop.cssProperty}>
           <div className="mb-0.5 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <label className="block font-mono text-xs p-text-secondary">{prop.name}</label>
+              <label className="block text-sm font-normal text-[var(--text-color)]">{prop.cssProperty}</label>
               {prop.inherited ? <span className="text-xs">Inherited</span> : null}
               {prop.status !== 'standard' ? (
                 <span className="text-xs capitalize">{prop.status}</span>

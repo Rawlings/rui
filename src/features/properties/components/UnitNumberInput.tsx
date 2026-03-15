@@ -1,5 +1,4 @@
 import { Dropdown } from 'primereact/dropdown'
-import { InputNumber } from 'primereact/inputnumber'
 import type { PropertyInputProps } from './propertyInputUtils'
 import { parseUnitValue } from './propertyInputUtils'
 
@@ -11,56 +10,62 @@ export function UnitNumberInput({ property, value, onChange }: PropertyInputProp
   const suggestions = (property.suggestions ?? [])
     .filter((item) => item.kind === 'keyword')
     .map((item) => item.value)
+  const numericSuggestions = suggestions.filter((item) => /^-?\d*\.?\d+$/.test(item))
   const isKeyword = typeof value === 'string' && value.trim() !== '' && !/^-?\d/.test(value.trim())
+  const keywordValue = isKeyword ? String(value).trim() : ''
+  const numericValue = Number.isFinite(numeric) ? String(numeric) : '0'
+  const numberOptions = [...new Set([numericValue, ...numericSuggestions])]
 
   return (
     <div className="mt-1 space-y-1.5">
       {isKeyword ? (
-        <div className="flex items-center gap-2">
-          <span className="rounded px-2 py-1 text-sm">{value}</span>
-          <button type="button" onClick={() => onChange(`0${defaultUnit}`)}>
-            ×
-          </button>
-        </div>
+        <Dropdown
+          value={keywordValue}
+          options={suggestions}
+          editable
+          showClear
+          className="w-full"
+          placeholder="Keyword value (auto, inherit, initial...)"
+          onChange={(e) => {
+            if (typeof e.value === 'string' && e.value.trim().length > 0) {
+              onChange(e.value.trim())
+              return
+            }
+            onChange(`${numeric}${activeUnit}`)
+          }}
+        />
       ) : (
         <div className="flex items-center gap-2">
-          <InputNumber
-            value={Number.isFinite(numeric) ? numeric : 0}
-            min={property.min}
-            max={property.max}
-            step={property.step ?? 1}
-            useGrouping={false}
-            inputClassName="w-full"
+          <Dropdown
+            value={numericValue}
+            options={numberOptions}
+            editable
             className="w-full"
-            onValueChange={(e) => {
-              const next = typeof e.value === 'number' ? e.value : 0
-              onChange(`${next}${activeUnit}`)
+            placeholder="Numeric value"
+            onChange={(e) => {
+              if (typeof e.value === 'string' && e.value.trim().length > 0) {
+                const nextNumeric = Number(e.value)
+                if (Number.isFinite(nextNumeric)) {
+                  onChange(`${nextNumeric}${activeUnit}`)
+                }
+                return
+              }
+              onChange(`${numeric}${activeUnit}`)
             }}
           />
           <Dropdown
             value={activeUnit}
             options={allowedUnits}
-            className="w-24"
-            onChange={(e) => onChange(`${numeric}${e.value}`)}
+            editable
+            className="w-40"
+            onChange={(e) => {
+              const nextUnit = typeof e.value === 'string' && e.value.trim().length > 0 ? e.value.trim() : defaultUnit
+              onChange(`${numeric}${nextUnit}`)
+            }}
           />
         </div>
       )}
 
-      {suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {suggestions.slice(0, 6).map((kw) => (
-            <button
-              key={kw}
-              type="button"
-              className="rounded px-2 py-0.5 text-xs"
-              aria-pressed={value === kw}
-              onClick={() => onChange(kw)}
-            >
-              {kw}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
