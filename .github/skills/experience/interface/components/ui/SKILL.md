@@ -28,7 +28,7 @@ metadata:
 - Reuse existing UI token concepts when building the PrimeReact theme layer so shell, border, text, accent, and motion language stay aligned.
 - Keep Tailwind utility composition responsible for layout and component styling decisions.
 - Do not define custom CSS classes or selector-driven component styling in `*.css` files.
-- Do not add dedicated wrapper classes like `rui-*` purely to target components from stylesheets.
+- Do not add dedicated wrapper classes like `driftless-*` purely to target components from stylesheets.
 
 ## Visual System
 
@@ -81,7 +81,7 @@ metadata:
 - Toolbar and panels remain responsive and functional across viewport sizes.
 - UI components are reusable without hidden coupling to parent internals.
 - Keyboard and focus behavior are predictable for all interactive controls.
-- New UI follows the RUI shell pattern and panel/button styling conventions.
+- New UI follows the Driftless shell pattern and panel/button styling conventions.
 - Property UI additions reuse shared control primitives and mapping rules.
 - Icon sizing, stroke weight, and interaction states remain consistent across toolbar and side panels.
 - PrimeReact is the default choice for applicable form and panel widgets.

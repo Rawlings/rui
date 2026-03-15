@@ -33,7 +33,7 @@ export function LayersPanel() {
           <LayerNode node={node} selectedId={selectedId} onMove={moveLayer} />
         )}
         emptyMessage="No layers"
-        dragdropScope={search.trim() ? undefined : 'rui-layers'}
+        dragdropScope={search.trim() ? undefined : 'driftless-layers'}
         expandedKeys={expandedKeys}
         onToggle={(e) => setExpandedKeys(e.value)}
         onDragDrop={(event) => {

@@ -1,17 +1,17 @@
 {
-  "name": "rui",
+  "name": "driftless",
   "version": "0.1.0",
-  "description": "RUI is a visual design editor for building interface layouts and styles on a live canvas.",
+  "description": "Driftless is a visual design editor for building interface layouts and styles on a live canvas.",
   "private": true,
   "license": "MIT",
-  "author": "RUI Contributors",
-  "homepage": "https://rawlings.github.io/rui/",
+  "author": "Driftless Contributors",
+  "homepage": "https://rawlings.github.io/driftless/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rawlings/rui.git"
+    "url": "https://github.com/rawlings/driftless.git"
   },
   "bugs": {
-    "url": "https://github.com/rawlings/rui/issues"
+    "url": "https://github.com/rawlings/driftless/issues"
   },
   "keywords": [
     "visual-editor",

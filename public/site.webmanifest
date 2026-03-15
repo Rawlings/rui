@@ -1,9 +1,9 @@
 {
-  "name": "RUI",
-  "short_name": "RUI",
+  "name": "Driftless",
+  "short_name": "Driftless",
   "description": "Visual design editor for interface layouts and CSS-driven styling.",
-  "start_url": "/rui/",
-  "scope": "/rui/",
+  "start_url": "/driftless/",
+  "scope": "/driftless/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

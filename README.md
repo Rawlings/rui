@@ -1,112 +1,61 @@
-# Interface Delivery Platform
+# Driftless
 
-Design, align, and deliver product interfaces in one shared workspace.
+Stop drawing pictures of websites.
 
-This platform is built for teams that want a direct path from concept to production-ready UI, without the usual handoff drag between design and engineering.
+Driftless is a direct-to-DOM interface editor for people who are tired of their intent getting diluted between design files, tickets, and implementation guesses.
+
+No fake canvas physics.
+No mystery export step.
+No "close enough" translation phase.
 
 ## Live Product
 
-https://rawlings.github.io/rui/
+https://rawlings.github.io/driftless/
 
-## The Core Idea
+## Core Philosophy
 
-Most teams do excellent work, then lose time translating that work across tools.
+Most design tools are simulations.
+Driftless is closer to the real thing.
 
-Design intent gets diluted.
-Implementation details get re-decided.
-Review cycles stretch.
+You are not pretending a button exists.
+You are defining how it lays out, stacks, and styles in the browser model itself.
 
-This product removes that translation tax by giving teams a single environment where structure, styling, and implementation intent stay connected from day one.
+It is still visual.
+It is just not disconnected from reality.
 
-## Why Teams Choose This Approach
+## Why This Is Fun
 
-- One source of truth for interface decisions
-- 1:1 designer-developer workflow instead of interpretive handoff
-- Faster iteration without sacrificing production detail
-- Higher confidence in what gets shipped
+- The specificity war gets shorter when the thing you set is the thing that renders.
+- Handoff drama drops when design decisions already map to implementation behavior.
+- CSS stops feeling like "later" and starts feeling like part of designing.
+- "Preview" is not a mode switch. The workspace is the preview.
 
-## What It Enables
+## Technical Truths
 
-### Build with Speed
+- DOM-first: you are manipulating nodes, not screenshot layers.
+- CSS-native: no proprietary style language hiding behind pretty knobs.
+- Real-time fidelity: what you see is what the browser is actually doing.
+- Drift-resistant by default: less reinterpretation means fewer surprises.
 
-- Compose interfaces directly on a live canvas
-- Move quickly from rough layout to polished presentation
-- Iterate in tight loops with immediate visual feedback
+## Who This Is For
 
-### Refine with Precision
+People who want to design with implementation truth in the loop.
+People who do not want to ask permission to tweak a hover state.
+People who like power tools and can live with sharp edges.
 
-- Control hierarchy, spacing, and visual rhythm with intent
-- Tune advanced styling in context, not in disconnected panels
-- Maintain design quality while increasing delivery velocity
+## The Bottom Line
 
-### Align Across Functions
+Driftless is high-fidelity, low-ceremony, and a little dangerous in the best way.
 
-- Keep product, design, and engineering conversations grounded in the same artifact
-- Reduce ambiguity before implementation starts
-- Shorten review loops by making intent explicit
-
-## Value for Each Team
-
-### Design
-
-- More creative range without workflow fragmentation
-- Better control over final output quality
-- Less time preparing “handoff packages” and explaining edge cases
-
-### Engineering
-
-- Clearer interface intent and fewer guesswork decisions
-- Faster implementation from structured, production-minded specs
-- Reduced back-and-forth on styling and interaction details
-
-### Product and Leadership
-
-- Better predictability from idea to release
-- Lower rework caused by interpretation gaps
-- Stronger consistency across surfaces and teams
-
-## Product Communication Principles
-
-This platform is communicated and built around a few non-negotiables:
-
-- Outcome-first messaging: focus on shipped value, not tooling mechanics
-- End-to-end workflow clarity: from first concept to final interface
-- Team language over role silos: everyone works from the same reality
-- Systems at scale: repeatable quality, not one-off screens
-- Simplicity with depth: approachable at first touch, powerful when needed
-
-## Typical Use Cases
-
-- Shipping new product surfaces faster with fewer revisions
-- Aligning cross-functional teams during rapid feature cycles
-- Building design systems and reusable UI patterns with implementation fidelity
-- Reducing design-to-code drift in high-velocity product organizations
-
-## Business Outcomes
-
-Teams using this model consistently improve:
-
-- Time-to-first-usable-interface
-- Design-to-development cycle time
-- Consistency across shipped UI
-- Confidence during launch and post-launch iteration
-
-## Strategic Position
-
-This is not a lightweight mockup utility.
-
-It is a delivery platform for interface work: fast enough for exploration, structured enough for implementation, and clear enough for cross-functional execution.
+Build for the browser, in the browser.
 
 ## Contributing
 
-Contributions are welcome. Keep changes focused, align with architecture and UX guardrails, and update documentation when behavior evolves.
+Contributions are welcome.
 
-## Architecture Program
-
-- Target-state skill: `.github/skills/architecture/governance/target-state/editor-architecture/SKILL.md`
-- Current boundary map: `.github/architecture/current-boundary-map.md`
-- Feature public API map: `.github/architecture/feature-public-api-map.md`
-- ADR index: `.github/architecture/adrs/README.md`
+Keep changes focused.
+Respect architecture and UX guardrails.
+Update docs when behavior changes.
 
 ## License
 
